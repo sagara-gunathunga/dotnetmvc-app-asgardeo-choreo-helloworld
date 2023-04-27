@@ -86,7 +86,7 @@ app.UseAuthorization();
 
 
 
-Steps 3 - Adding login buttion ( Not a login page)
+Steps 3 - Adding login button ( Not a login page)
 
 
 
@@ -106,10 +106,72 @@ Steps 3 - Adding login buttion ( Not a login page)
                                 <a class="nav-link text-dark" asp-controller="Identity" asp-action="Login">Login</a>
                             </li>
                         }
-                        </ul>      
+                        </ul>    
+
+
+                        IdentityController.cs
+
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
+
+
+namespace HelloworldSecure.Controllers;
+public class IdentityController : Controller
+{
+  
+    [HttpGet]
+    public IActionResult Login()
+    {
+        var redirectUrl = Url.Action("Index", "Home", null, Request.Scheme);
+
+        return Challenge(
+            new AuthenticationProperties { RedirectUri = redirectUrl },
+            OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
+    
+
+}  
+
+
+Step 4 - Adding logout button 
+
+ _Layout.cshtml
+
+<ul class="navbar-nav">
+                        @if (User?.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" title="Manage">@User.Claims.Where(claim =>claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" ).First().Value</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Identity" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Identity" asp-action="Login">Login</a>
+                            </li>
+                        }
+</ul>
 
 
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+ 
+[HttpGet]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        var idToken = await HttpContext.GetTokenAsync("id_token");
+        string appOrigin = Url.Action("Index", "Home", null, Request.Scheme)!;
+        string redirectURL = $"{appOrigin.Remove(appOrigin.Length - 1, 1)}";
+
+        return Redirect($"https://api.asgardeo.io/t/sagaraorg/oidc/logout?id_token_hint={idToken}&post_logout_redirect_uri={redirectURL}");
+    } 
 
 
 Improvemnts 
