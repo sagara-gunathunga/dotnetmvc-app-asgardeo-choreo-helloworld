@@ -12,12 +12,7 @@ builder.Services.AddAuthentication(options => {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(options => {
-    options.Cookie.Name = "oidc";
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.IsEssential = true;
-})
+.AddCookie()
 .AddOpenIdConnect(options => 
 {
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -26,9 +21,8 @@ builder.Services.AddAuthentication(options => {
     options.Authority = "https://api.asgardeo.io/t/sagaraorg/oauth2/token";
     options.ResponseType = OpenIdConnectResponseType.Code;
     options.ResponseMode = OpenIdConnectResponseMode.Query;
-    options.GetClaimsFromUserInfoEndpoint = true;
+    options.SaveTokens = true;
     options.Scope.Add("openid");
-    options.Scope.Add("email");
     options.Scope.Add("profile");
 });
 
@@ -47,6 +41,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
