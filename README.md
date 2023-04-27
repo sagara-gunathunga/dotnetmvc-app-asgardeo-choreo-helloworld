@@ -174,6 +174,96 @@ using Microsoft.AspNetCore.Authentication.Cookies;
     } 
 
 
+Steps 5 - Claims and tokens 
+
+dotnet add package Newtonsoft.Json
+
+
+IDModel.cs
+
+using System;
+
+namespace HelloworldSecure.Models;
+public class IDModel
+{
+    public IEnumerable<System.Security.Claims.Claim>? Claims { get; set; }
+    public string? AccessToken { get; set; }
+    public string? IdToken { get; set; }
+    public string? RefreshToken { get; set; }
+    public string? DisplayName { get; set; }
+    public string? ProfileURL { get; set; }
+}
+
+
+
+
+
+
+<div>
+    <h4>Profile Pic</h4>
+    <img src=@Model.ProfileURL class="profile-pic"/>
+    <h4>Claims</h4>
+    <ul>
+        @foreach (var claim in Model.Claims)
+        {
+            <li><b>@claim.Type</b> <span>@claim.Value</span></li>
+
+        }
+    </ul>
+    <h4>Access Token</h4>
+    <p class="field">@Model.AccessToken</p>
+    <h4>ID Token</h4>
+    <p class="field">@Model.IdToken</p>
+    <h4>Refresh Token</h4>
+    <p class="field">@Model.RefreshToken</p>
+</div>
+
+
+
+    [Authorize]
+    public async Task<IActionResult> Secure()
+    {
+        var accessToken = await HttpContext.GetTokenAsync("access_token");
+        Console.WriteLine("accessToken ", accessToken);
+
+        var idToken = await HttpContext.GetTokenAsync("id_token");
+        var refreshToken = await HttpContext.GetTokenAsync("refresh_token");
+        string displayName = User.Claims.Where(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").First().Value;
+        IEnumerable<System.Security.Claims.Claim> claims = User.Claims;
+
+        // Getting the profile picture URL from the userinfo endpoint
+        // to demonstrate how an API request can be dispatched to a
+        // protected endpoint using the access token.
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        string userinfoEndpoint = $"https://api.asgardeo.io/t/sagaraorg/oauth2/userinfo";
+        using var response = await httpClient.GetAsync(userinfoEndpoint);
+
+        string profilePic = "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg";
+
+        if (response.IsSuccessStatusCode)
+        {
+            string content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content)!;
+
+            profilePic = json.profile;
+        }
+
+
+        return View(new IDModel
+        {
+            Claims = claims,
+            AccessToken = accessToken,
+            DisplayName = displayName,
+            IdToken = idToken,
+            RefreshToken = refreshToken,
+            ProfileURL = profilePic
+        });
+    }
+
+
+
 Improvemnts 
 
 1. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/member-access-operators#null-conditional-operators--and-

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model HelloworldSecure.Models.IDModel
+@{
     ViewData["Title"] = "Secure";
 }
 <h1>@ViewData["Title"]</h1>
@@ -7,3 +8,23 @@
     <h1>This is a secure page!</h1>
     <p>Only authenticated users can view this page</p>
 </div>
+
+<div>
+    <h4>Profile Pic</h4>
+    <img src=@Model.ProfileURL class="profile-pic"/>
+    <h4>Claims</h4>
+    <ul>
+        @foreach (var claim in Model.Claims)
+        {
+            <li><b>@claim.Type</b> <span>@claim.Value</span></li>
+
+        }
+    </ul>
+    <h4>Access Token</h4>
+    <p class="field">@Model.AccessToken</p>
+    <h4>ID Token</h4>
+    <p class="field">@Model.IdToken</p>
+    <h4>Refresh Token</h4>
+    <p class="field">@Model.RefreshToken</p>
+</div>
+
