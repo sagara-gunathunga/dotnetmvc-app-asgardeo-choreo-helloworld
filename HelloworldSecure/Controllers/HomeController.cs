@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HelloworldSecure.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelloworldSecure.Controllers;
 
@@ -19,6 +20,12 @@ public class HomeController : Controller
     }
 
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [Authorize]
+    public IActionResult Secure()
     {
         return View();
     }
