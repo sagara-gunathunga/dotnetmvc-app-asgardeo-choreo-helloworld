@@ -26,13 +26,8 @@ public class IdentityController : Controller
         var idToken = await HttpContext.GetTokenAsync("id_token");
         string appOrigin = Url.Action("Index", "Home", null, Request.Scheme)!;
         string redirectURL = $"{appOrigin.Remove(appOrigin.Length - 1, 1)}";
-        Console.WriteLine($"redirectURL: {redirectURL}");
-        Console.WriteLine($"idToken: {idToken}");
-
-       return Redirect($"https://api.asgardeo.io/t/sagaraorg/oidc/logout?id_token_hint={idToken}&post_logout_redirect_uri={redirectURL}");
+        return Redirect($"https://api.asgardeo.io/t/sagaraorg/oidc/logout?id_token_hint={idToken}&post_logout_redirect_uri={redirectURL}");
     }
-
-
 
 }
 

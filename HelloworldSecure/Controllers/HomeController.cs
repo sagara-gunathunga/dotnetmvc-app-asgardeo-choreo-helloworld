@@ -31,8 +31,6 @@ public class HomeController : Controller
     public async Task<IActionResult> Secure()
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token");
-        Console.WriteLine("accessToken ", accessToken);
-
         var idToken = await HttpContext.GetTokenAsync("id_token");
         var refreshToken = await HttpContext.GetTokenAsync("refresh_token");
         string displayName = User.Claims.Where(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").First().Value;
@@ -47,7 +45,7 @@ public class HomeController : Controller
         string userinfoEndpoint = $"https://api.asgardeo.io/t/sagaraorg/oauth2/userinfo";
         using var response = await httpClient.GetAsync(userinfoEndpoint);
 
-        string profilePic = "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg";
+        string profilePic = "";
 
         if (response.IsSuccessStatusCode)
         {
