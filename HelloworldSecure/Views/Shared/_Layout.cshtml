@@ -27,7 +27,22 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Secure">Secure</a>
-                        </li>                      
+                        </li>     
+
+                        <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" title="Manage">@User.Claims.Where(claim =>claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" ).First().Value</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Identity" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        </ul>                 
                     </ul>
                 </div>
             </div>

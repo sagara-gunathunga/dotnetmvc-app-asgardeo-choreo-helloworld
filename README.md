@@ -86,9 +86,35 @@ app.UseAuthorization();
 
 
 
+Steps 3 - Adding login buttion ( Not a login page)
+
+
+
+ _Layout.cshtml
+
+
+ <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" title="Manage">@User.Claims.Where(claim =>claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" ).First().Value</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Identity" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        </ul>      
 
 
 
 
 
+Improvemnts 
+
+1. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/member-access-operators#null-conditional-operators--and-
+2. Injectiing configuration paramters 
+3. CSS to align the menu 
 
